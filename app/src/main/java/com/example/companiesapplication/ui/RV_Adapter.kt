@@ -30,6 +30,7 @@ class RV_Adapter(
     }
 
 
+
     fun addItem(item: ItemModel){
 //        items.add(item)
 //
@@ -50,6 +51,12 @@ class RV_Adapter(
         holder.itemView.setOnClickListener {
             onItemClick(item)
         }
+
+        if (item.isHighLighted){
+            holder.itemView.setBackgroundResource(R.color.background_item)
+        }else{
+            holder.itemView.setBackgroundResource(R.color.white)
+        }
         holder.itemView.setOnLongClickListener {
             onLongPress(item)
             true
@@ -62,13 +69,11 @@ class RV_Adapter(
     }
 
     inner class MyViewHolder(itemView:View):RecyclerView.ViewHolder(itemView){
-       val name: TextView = itemView.findViewById(R.id.name)
+        val name: TextView = itemView.findViewById(R.id.name)
         val status = itemView.findViewById<TextView>(R.id.status)
         val number = itemView.findViewById<TextView>(R.id.number)
 
-
     }
-
 
 
 }

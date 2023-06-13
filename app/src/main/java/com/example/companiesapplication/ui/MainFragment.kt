@@ -47,26 +47,44 @@ class MainFragment : Fragment() {
         observeSearchClick()
         onSearchClick()
         handleSearch()
-        observeSearchItems()
+        onArrowsClick()
         return binding.root
     }
 
+    private fun onArrowsClick() {
 
+        binding.arrowDown.setOnClickListener {
+            println(viewModel.currentSearchPosition)
+            println(viewModel.searchItemsIndex)
+            if (viewModel.currentSearchPosition >= 0 && viewModel.currentSearchPosition < viewModel.searchItemsIndex.size && viewModel.searchItemsIndex.isNotEmpty()){
+                initRecyclerView(viewModel.searchItems.value!!)
+                binding.recyclerView.scrollToPosition(viewModel.searchItemsIndex[viewModel.currentSearchPosition])
+//                adapter.updateItem(viewModel.searchItemsIndex[viewModel.currentSearchPosition])
+                viewModel.currentSearchPosition += 1
+            }else{
+                Toast.makeText(requireContext(), "not found", Toast.LENGTH_SHORT).show()
+            }
+        }
 
-    private fun observeSearchItems(){
-        viewModel.searchItems.observe(requireActivity()){
-            if(it.isNotEmpty()){
-//                initRecyclerView(viewModel.searchItems.value!!)
+        binding.arrowUp.setOnClickListener {
+            println(viewModel.currentSearchPosition)
+            if (viewModel.currentSearchPosition >  0 && viewModel.searchItemsIndex.isNotEmpty()){
+                viewModel.currentSearchPosition -= 1
+                binding.recyclerView.scrollToPosition(viewModel.searchItemsIndex[viewModel.currentSearchPosition])
+            }else{
+                Toast.makeText(requireContext(), "not found", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
 
     private fun handleSearch() {
         binding.SearchEditText.addTextChangedListener {
             if (it?.toString()?.trim()?.isBlank()!!){
                 initRecyclerView(viewModel.companiesList.value!!)
             }else{
-                initRecyclerView(viewModel.handleSearch(it?.toString()?.trim()!!))
+                viewModel.handleSearch(it?.toString()?.trim()!!)
+//                initRecyclerView(viewModel.handleSearch(it?.toString()?.trim()!!))
             }
         }
     }

@@ -34,6 +34,7 @@ class MainViewModel @Inject constructor(
     val searchItems by lazy {
         MutableLiveData<MutableList<ItemModel>>(mutableListOf())
     }
+    var searchItemsIndex = mutableListOf<Int>()
     val companiesList by lazy {
         MutableLiveData<MutableList<ItemModel>>()
     }
@@ -49,6 +50,7 @@ class MainViewModel @Inject constructor(
     val _items by lazy {
         MutableLiveData<DataState<MutableList<ItemModel>>>()
     }
+    var currentSearchPosition = 0
 
    fun init(sharedPreferences: SharedPreferences){
        this.sharedPreferences = sharedPreferences
@@ -73,12 +75,22 @@ class MainViewModel @Inject constructor(
     }
 
     fun handleSearch(string:String):MutableList<ItemModel> {
+        currentSearchPosition = 0
+        searchItemsIndex = mutableListOf()
         searchItems.value = mutableListOf()
-       companiesList.value?.onEach {
-           if (it.name.lowercase().contains(string.lowercase())){
-               searchItems.value?.add(it)
+       companiesList.value?.onEachIndexed { index, item ->
+
+           if (item.name.lowercase().contains(string.lowercase())){
+               searchItemsIndex.add(index)
+//               item.isHighLighted = true
+               searchItems.value!!.add(ItemModel(item.id, item.name, item.status, true))
+           }else{
+               searchItems.value!!.add(item)
            }
        }
+
+
+
         return searchItems.value!!
     }
 
