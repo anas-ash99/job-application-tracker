@@ -1,6 +1,6 @@
-#Job Application Tracker
+# Job Application Tracker App
 
+The Company Tracker App is a Kotlin-based mobile application that helps users track and monitor their job applications. It follows the MVVM architecture pattern and uses Dagger Hilt for dependency injection.
 
-I developed this application with the purpose of effectively managing and monitoring the status of my job applications, as well as keeping track of the companies I have applied to..
 
 
