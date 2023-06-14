@@ -1,8 +1,7 @@
 package com.example.companiesapplication.domian
 
-import android.content.SharedPreferences
 import com.example.companiesapplication.shared.DataState
-import com.example.companiesapplication.shared.ItemModel
+import com.example.companiesapplication.shared.models.ItemModel
 import kotlinx.coroutines.flow.Flow
 
 

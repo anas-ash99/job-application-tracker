@@ -13,20 +13,17 @@ import androidx.core.widget.addTextChangedListener
 
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.companiesapplication.*
 import com.example.companiesapplication.databinding.FragmentMainBinding
 import com.example.companiesapplication.domian.MainViewModel
 import com.example.companiesapplication.shared.DataState
 import com.example.companiesapplication.shared.ItemEvent
-import com.example.companiesapplication.shared.ItemModel
+import com.example.companiesapplication.shared.models.ItemModel
 import com.example.companiesapplication.shared.KeyboardManger.hideSoftKeyboard
 import com.example.companiesapplication.shared.KeyboardManger.showSoftKeyboard
 import com.example.companiesapplication.shared.SearchEvent
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 
 
 @AndroidEntryPoint
@@ -35,7 +32,7 @@ class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
     private lateinit var viewModel: MainViewModel
     private lateinit var dialog: ItemDialog
-    private lateinit var adapter: RV_Adapter
+    private lateinit var adapter: RVAdapter
 
 
     override fun onCreateView(
@@ -54,7 +51,14 @@ class MainFragment : Fragment() {
         onSearchClick()
         handleSearch()
         onArrowsClick()
+        onXButtonClick()
         return binding.root
+    }
+
+    private fun onXButtonClick() {
+       binding.xButton.setOnClickListener {
+           binding.SearchEditText.setText("")
+       }
     }
 
     private fun onArrowsClick() {
@@ -86,7 +90,7 @@ class MainFragment : Fragment() {
 
          binding.imageView3.setOnClickListener {
              viewModel.currentSearchPosition = 0
-           viewModel.handleSearch3(binding.SearchEditText.text?.toString()?.trim()!!)
+           viewModel.handleSearch(binding.SearchEditText.text?.toString()?.trim()!!)
              if (viewModel.searchItemsIndex.isNotEmpty()){
                  binding.recyclerView.smoothScrollToPosition(viewModel.searchItemsIndex[0])
                  hideSoftKeyboard(binding.SearchEditText, requireContext())
@@ -111,6 +115,14 @@ class MainFragment : Fragment() {
                     Toast.makeText(requireContext(), "Not found", Toast.LENGTH_SHORT).show()
                     viewModel.searchEvent.value = null
                 }
+            }
+        }
+
+        binding.SearchEditText.addTextChangedListener {
+            if (it?.toString()?.trim()?.isBlank()!!){
+                binding.xButton.visibility = View.GONE
+            }else{
+                binding.xButton.visibility = View.VISIBLE
             }
         }
 
@@ -150,7 +162,7 @@ class MainFragment : Fragment() {
 
 
     private fun initRecyclerView(items:MutableList<ItemModel>) {
-        adapter = RV_Adapter(items, ::onRVItemClick, ::onItemLongPress)
+        adapter = RVAdapter(items, ::onRVItemClick, ::onItemLongPress)
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
     }

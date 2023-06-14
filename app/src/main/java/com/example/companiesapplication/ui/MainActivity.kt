@@ -11,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import com.example.companiesapplication.R
 import com.example.companiesapplication.databinding.ActivityMainBinding
 import com.example.companiesapplication.domian.MainViewModel
+import com.example.companiesapplication.shared.extention_funtions.SetSpanIndex.setSpanIndex
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -27,6 +28,7 @@ class MainActivity : AppCompatActivity() {
             replace(R.id.fragment_layout, MainFragment(), "fragment")
             commit()
         }
+
 
 
     }

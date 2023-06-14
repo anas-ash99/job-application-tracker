@@ -3,7 +3,7 @@ package com.example.companiesapplication.domian
 import android.content.SharedPreferences
 import android.util.Log
 import com.example.companiesapplication.shared.DataState
-import com.example.companiesapplication.shared.ItemModel
+import com.example.companiesapplication.shared.models.ItemModel
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

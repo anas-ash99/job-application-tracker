@@ -2,7 +2,7 @@ package com.example.companiesapplication.domian.use_cases
 
 import android.util.Log
 import com.example.companiesapplication.shared.ItemEvent
-import com.example.companiesapplication.shared.ItemModel
+import com.example.companiesapplication.shared.models.ItemModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.flow
 class AddNewItem {
 
 
-    fun invoke(companiesList:MutableList<ItemModel>, currentDialogItem:ItemModel):Flow<ItemEvent> = flow{
+    fun invoke(companiesList:MutableList<ItemModel>, currentDialogItem: ItemModel):Flow<ItemEvent> = flow{
 
 
         try {

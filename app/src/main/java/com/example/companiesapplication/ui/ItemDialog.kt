@@ -13,7 +13,7 @@ import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.MutableLiveData
-import com.example.companiesapplication.shared.ItemModel
+import com.example.companiesapplication.shared.models.ItemModel
 import com.example.companiesapplication.domian.MainViewModel
 import com.example.companiesapplication.R
 

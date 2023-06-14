@@ -1,25 +1,27 @@
 package com.example.companiesapplication.ui
 
+import android.graphics.Color
+import android.text.SpannableString
+import android.text.style.BackgroundColorSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.companiesapplication.shared.ItemModel
 import com.example.companiesapplication.R
+import com.example.companiesapplication.shared.extention_funtions.SetSpanIndex.setSpanIndex
+import com.example.companiesapplication.shared.models.ItemModel
 
-class RV_Adapter(
+
+class RVAdapter(
 
 
     private val items:MutableList<ItemModel>,
     private val onItemClick:(ItemModel)->Unit,
     private val onLongPress:(ItemModel)->Unit
 
-) : RecyclerView.Adapter<RV_Adapter.MyViewHolder>() {
-
-
-
-
+) : RecyclerView.Adapter<RVAdapter.MyViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -32,12 +34,10 @@ class RV_Adapter(
 
 
     fun addItem(item: ItemModel){
-//        items.add(item)
-//
+
         notifyItemInserted(items.size - 1)
     }
     fun updateItem(position: Int){
-//        items[position] = item
         notifyItemChanged(position)
     }
     fun deleteItem(index:Int){
@@ -45,7 +45,7 @@ class RV_Adapter(
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
          val item = items[position]
-        holder.name.text = item.name
+
         holder.status.text = item.status
         holder.number.text = "${item.id}"
         holder.itemView.setOnClickListener {
@@ -53,9 +53,17 @@ class RV_Adapter(
         }
 
         if (item.isHighLighted){
-            holder.itemView.setBackgroundResource(R.color.background_item)
+            try {
+                val spanIndex = item.name.setSpanIndex(item.textToHighLight)
+                val str = SpannableString(item.name)
+                str.setSpan(BackgroundColorSpan(Color.CYAN), spanIndex.startIndex, spanIndex.endIndex, 0)
+                holder.name.text = str
+            }catch (e:Exception){
+                Log.e("span", e.message, e)
+            }
+
         }else{
-            holder.itemView.setBackgroundResource(R.color.white)
+            holder.name.text = item.name
         }
         holder.itemView.setOnLongClickListener {
             onLongPress(item)
@@ -70,8 +78,8 @@ class RV_Adapter(
 
     inner class MyViewHolder(itemView:View):RecyclerView.ViewHolder(itemView){
         val name: TextView = itemView.findViewById(R.id.name)
-        val status = itemView.findViewById<TextView>(R.id.status)
-        val number = itemView.findViewById<TextView>(R.id.number)
+        val status: TextView = itemView.findViewById(R.id.status)
+        val number: TextView = itemView.findViewById(R.id.number)
 
     }
 
