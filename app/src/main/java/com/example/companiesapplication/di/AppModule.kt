@@ -3,6 +3,7 @@ package com.example.companiesapplication.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.companiesapplication.domian.use_cases.AddNewItem
+import com.example.companiesapplication.domian.use_cases.CompanySearchUseCase
 import com.example.companiesapplication.domian.use_cases.DeleteItemUseCase
 import dagger.Module
 import dagger.Provides
@@ -33,4 +34,7 @@ object AppModule {
     @Singleton
     @Provides
     fun provideDeleteItemCase() = DeleteItemUseCase()
+    @Singleton
+    @Provides
+    fun provideSearchCase() = CompanySearchUseCase()
 }

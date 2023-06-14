@@ -14,14 +14,14 @@ class AddNewItem {
 
 
         try {
-            if(companiesList.isEmpty()!!){
+            if(companiesList.isEmpty()){
                 currentDialogItem.id = 1
                 companiesList.add(currentDialogItem)
 
                 emit(ItemEvent.AddItem(currentDialogItem))
             }else{
                 //////// add new item to not empty list
-                if (!companiesList.any { it.id == currentDialogItem.id  }!!){
+                if (!companiesList.any { it.id == currentDialogItem.id  }){
                     currentDialogItem.id = companiesList[companiesList.size - 1].id + 1
                     companiesList.add(currentDialogItem)
                     emit(ItemEvent.AddItem(currentDialogItem))

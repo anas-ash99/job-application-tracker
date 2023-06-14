@@ -2,18 +2,22 @@ package com.example.companiesapplication.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import com.example.companiesapplication.R
 import com.example.companiesapplication.databinding.ActivityMainBinding
+import com.example.companiesapplication.domian.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private val viewModel:MainViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -25,5 +29,13 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    override fun onBackPressed() {
+        if (viewModel.isSearchClick.value!!){
+            viewModel.isSearchClick.value = false
+        }else{
+            super.onBackPressed()
+        }
     }
 }

@@ -13,6 +13,7 @@ import androidx.core.widget.addTextChangedListener
 
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.companiesapplication.*
 import com.example.companiesapplication.databinding.FragmentMainBinding
@@ -20,7 +21,12 @@ import com.example.companiesapplication.domian.MainViewModel
 import com.example.companiesapplication.shared.DataState
 import com.example.companiesapplication.shared.ItemEvent
 import com.example.companiesapplication.shared.ItemModel
+import com.example.companiesapplication.shared.KeyboardManger.hideSoftKeyboard
+import com.example.companiesapplication.shared.KeyboardManger.showSoftKeyboard
+import com.example.companiesapplication.shared.SearchEvent
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 
 @AndroidEntryPoint
@@ -53,40 +59,61 @@ class MainFragment : Fragment() {
 
     private fun onArrowsClick() {
 
+
         binding.arrowDown.setOnClickListener {
-            println(viewModel.currentSearchPosition)
-            println(viewModel.searchItemsIndex)
-            if (viewModel.currentSearchPosition >= 0 && viewModel.currentSearchPosition < viewModel.searchItemsIndex.size && viewModel.searchItemsIndex.isNotEmpty()){
-                initRecyclerView(viewModel.searchItems.value!!)
-                binding.recyclerView.scrollToPosition(viewModel.searchItemsIndex[viewModel.currentSearchPosition])
-//                adapter.updateItem(viewModel.searchItemsIndex[viewModel.currentSearchPosition])
+            if ( viewModel.searchItemsIndex.isNotEmpty() && viewModel.searchItemsIndex.size -1 > viewModel.currentSearchPosition){
                 viewModel.currentSearchPosition += 1
-            }else{
-                Toast.makeText(requireContext(), "not found", Toast.LENGTH_SHORT).show()
+               binding.recyclerView.smoothScrollToPosition(viewModel.searchItemsIndex[viewModel.currentSearchPosition])
+            }else {
+                Toast.makeText(requireContext(), "Not found", Toast.LENGTH_SHORT).show()
             }
         }
 
         binding.arrowUp.setOnClickListener {
-            println(viewModel.currentSearchPosition)
-            if (viewModel.currentSearchPosition >  0 && viewModel.searchItemsIndex.isNotEmpty()){
+            if (viewModel.currentSearchPosition > 0){
                 viewModel.currentSearchPosition -= 1
-                binding.recyclerView.scrollToPosition(viewModel.searchItemsIndex[viewModel.currentSearchPosition])
+                binding.recyclerView.smoothScrollToPosition(viewModel.searchItemsIndex[viewModel.currentSearchPosition])
             }else{
-                Toast.makeText(requireContext(), "not found", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Not found", Toast.LENGTH_SHORT).show()
             }
         }
+
     }
 
 
+
     private fun handleSearch() {
-        binding.SearchEditText.addTextChangedListener {
-            if (it?.toString()?.trim()?.isBlank()!!){
-                initRecyclerView(viewModel.companiesList.value!!)
-            }else{
-                viewModel.handleSearch(it?.toString()?.trim()!!)
-//                initRecyclerView(viewModel.handleSearch(it?.toString()?.trim()!!))
+
+         binding.imageView3.setOnClickListener {
+             viewModel.currentSearchPosition = 0
+           viewModel.handleSearch3(binding.SearchEditText.text?.toString()?.trim()!!)
+             if (viewModel.searchItemsIndex.isNotEmpty()){
+                 binding.recyclerView.smoothScrollToPosition(viewModel.searchItemsIndex[0])
+                 hideSoftKeyboard(binding.SearchEditText, requireContext())
+                 viewModel.searchItemsIndex.onEach {i->
+                     adapter.updateItem(i)
+
+                 }
+             }
+         }
+        viewModel.searchEvent.observe(requireActivity()){
+            when(it){
+                is SearchEvent.Error -> {
+                    Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_SHORT).show()
+                    viewModel.searchEvent.value = null
+                }
+                SearchEvent.Found -> {
+
+                    viewModel.searchEvent.value = null
+                }
+                SearchEvent.Loading -> {}
+                SearchEvent.NotFound -> {
+                    Toast.makeText(requireContext(), "Not found", Toast.LENGTH_SHORT).show()
+                    viewModel.searchEvent.value = null
+                }
             }
         }
+
     }
 
     private fun onSearchClick() {
@@ -95,13 +122,23 @@ class MainFragment : Fragment() {
         }
         binding.arrowBack.setOnClickListener {
             viewModel.isSearchClick.value = false
-            binding.SearchEditText.setText("")
+
         }
     }
 
     private fun observeSearchClick() {
         viewModel.isSearchClick.observe(requireActivity()){
             binding.isSearchClick = it
+            if (it){
+                showSoftKeyboard(binding.SearchEditText, requireContext())
+            }else{
+                hideSoftKeyboard(binding.SearchEditText, requireContext())
+                viewModel.reInitCompaniesList()
+                binding.SearchEditText.setText("")
+                viewModel.searchItemsIndex.onEach {  i->
+                    adapter.updateItem(i)
+                }
+            }
         }
     }
 
@@ -145,7 +182,7 @@ class MainFragment : Fragment() {
           when(it){
               is ItemEvent.AddItem -> {
                   adapter.addItem(it.item)
-                  binding.recyclerView.scrollToPosition(viewModel.companiesList.value?.size!! -1)
+                  binding.recyclerView.smoothScrollToPosition(viewModel.companiesList.value?.size!! -1)
                   viewModel.updateItems()
               }
               is ItemEvent.DeleteItem -> {
